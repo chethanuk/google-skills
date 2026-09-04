@@ -87,10 +87,27 @@ For details see:
 
 `genkit start` unintrusively wraps any Go program that uses the Genkit library, running it unchanged while capturing traces from every Genkit action so you can prove tools were actually called and inspect model I/O from the terminal, even for headless checks. It forwards stdio, so interactive CLI tools that rely on stdin/stdout work without issues. Running the app directly (`go run .`) skips trace capture, so you're debugging blind. Check install with `genkit --version`.
 
-**Installation:**
+**Installation (verified, version-pinned):**
+Install the CLI from the npm registry — the registry serves an immutable, version-pinned tarball with integrity hashes and Sigstore signatures verified automatically by npm. Do not pipe a remote script to `bash` (`curl ... | bash`), which fetches mutable content without published checksums or signatures.
+
 ```bash
-curl -sL cli.genkit.dev | bash
+npm install -g genkit-cli@1.42.0
+genkit --version
 ```
+
+Verify the installed artifact against registry metadata (optional):
+```bash
+npm view genkit-cli dist.integrity dist.shasum dist.signatures
+# or: npm audit signatures
+```
+
+No global install / no sudo — run directly without a global install:
+```bash
+npx -y genkit-cli@1.42.0 start -- go run .
+npx -y genkit-cli@1.42.0 flow:run myFlow '{"data": "input"}' -- go run .
+```
+
+> **Note on `cli.genkit.dev`:** the legacy shell installer at `https://cli.genkit.dev` serves mutable content (including a mutable `/latest` binary URL) with no published checksums, signatures, or provenance at the time of review. If you must use it, download the script first, inspect it, and run it explicitly — do not pipe `curl` directly to `bash` — and do not allow automatic passwordless `sudo` escalation unless you explicitly approve writing to a system directory. Prefer the version-pinned `genkit-cli` npm package above (see https://www.npmjs.com/package/genkit-cli).
 
 **Primary pattern (default):** prefix `genkit start --` to your normal run command. This collects telemetry from any Genkit code your program runs, whether triggered from the dev UI, your own web server/web UI, or a plain script. Starts the Developer UI (usually http://localhost:4000) for running flows, model and agent playground, and browsing traces:
 ```bash

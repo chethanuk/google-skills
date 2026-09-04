@@ -86,15 +86,29 @@ g := genkit.Init(ctx,
 
 The Genkit CLI provides a local Developer UI for running flows, tracing executions, and inspecting model interactions.
 
-**Install:**
-```bash
-curl -sL cli.genkit.dev | bash
-```
+**Install (verified, version-pinned):**
 
-**Verify:**
+Install from the npm registry — the registry serves an immutable, version-pinned tarball with integrity hashes and Sigstore signatures verified automatically by npm. Do not pipe a remote script to `bash`.
+
 ```bash
+npm install -g genkit-cli@1.42.0
 genkit --version
 ```
+
+Verify the installed artifact against registry metadata (optional):
+
+```bash
+npm view genkit-cli dist.integrity dist.shasum dist.signatures
+# or: npm audit signatures
+```
+
+No global install / no sudo — run directly without a global install:
+
+```bash
+npx -y genkit-cli@1.42.0 start -- go run .
+```
+
+> **Note on `cli.genkit.dev`:** the legacy shell installer at `https://cli.genkit.dev` serves mutable content with no published checksums, signatures, or provenance at the time of review. If you must use it, download the script first, inspect it, and run it explicitly — do not pipe `curl` directly to `bash` — and do not allow automatic passwordless `sudo` escalation unless you explicitly approve writing to a system directory. Prefer the version-pinned `genkit-cli` npm package above.
 
 ### Developer UI
 
